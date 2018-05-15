@@ -6,7 +6,7 @@ server {
     
     server_name  "${NGINX_SERVER_NAME}";
 
-    error_log /tmp/error.log info;
+    error_log /tmp/error.log warn;
 
     location ${NGINX_SERVICE_ROOT_LOCATION} {
         set $service_root ${NGINX_SERVICE_ROOT_URL};
