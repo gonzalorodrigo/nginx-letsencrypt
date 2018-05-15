@@ -13,7 +13,7 @@ else
 	nersc_user=$NERSC_USER
 fi
 now=`date "+%Y%m%d-%H%M%S"`
-container_name="sciencesearch-nginx:$branch-$now"
+container_name="sciencesearch-nginxv2:$branch-$now"
 spin_registry="registry.spin.nersc.gov"
 docker build --no-cache . -t "$container_name"
 docker tag ${container_name} ${spin_registry}/${nersc_user}/${container_name}

@@ -30,8 +30,6 @@ services:
     image: httpd:2.4
     volumes:
       - ./htdocs_service_1:/usr/local/apache2/htdocs/
-    ports:
-      - "8080:80"
   service-2:
     image: httpd:2.4
     volumes:

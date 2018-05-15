@@ -1,0 +1,49 @@
+version: '2'
+volumes:
+  nginx.{{ .Stack.Name }}:
+    driver: rancher-nfs
+    driver_opts:
+      onRemove: retain
+services:
+  web-nginx:
+    image: registry.spin.nersc.gov/crd-dst/sciencesearch-nginx:nginx-20180515-104054
+    volumes:
+      - /project_location/{{ .Stack.Name }}/nginx/conf.d:/conf.d:ro
+      - nginx.{{ .Stack.Name }}:/etc/letsencrypt/
+    environment:
+      - NGINX_SERVICE_ROOT_URL=service-root:80
+      - NGINX_SERVICE_1_URL=service-1:80
+      - NGINX_SERVICE_2_URL=service-2:80
+      - NGINX_SERVICE_ROOT_LOCATION=/
+      - NGINX_SERVICE_1_LOCATION=/service_1
+      - NGINX_SERVICE_2_LOCATION=/service_2
+      - NGINX_SERVER_NAME=sciencesearch-ncem-test.lbl.gov
+      - NGINX_CERT_EMAIL=gprodrigoalvarez@lbl.gov
+    depends_on:
+      - service-root
+      - service-1
+      - service-2
+  service-root:
+    image: registry.spin.nersc.gov/crd-dst/sciencesearch-postgres:20180126-114559
+    volumes:
+      - /project_location/{{ .Stack.Name }}/htdocs_service_root:/usr/local/apache2/htdocs/
+    stdin_open: true
+    tty: true
+    labels:
+      io.rancher.container.pull_image: always
+  service-1:
+    image: registry.spin.nersc.gov/crd-dst/sciencesearch-postgres:20180126-114559
+    volumes:
+      - /project_location/{{ .Stack.Name }}/htdocs_service_1:/usr/local/apache2/htdocs/
+    stdin_open: true
+    tty: true
+    labels:
+      io.rancher.container.pull_image: always
+  service-2:
+    image: registry.spin.nersc.gov/crd-dst/sciencesearch-postgres:20180126-114559
+    volumes:
+      - /project_location/{{ .Stack.Name }}/htdocs_service_2:/usr/local/apache2/htdocs/
+    stdin_open: true
+    tty: true
+    labels:
+      io.rancher.container.pull_image: always
