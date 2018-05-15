@@ -2,7 +2,11 @@ version: '3'
 
 services:
   nginx:
-    build: .
+    build:
+      context: .
+      args:
+        - SPIN_UID=503
+        - SPIN_GID=20
     ports: 
       - "80:80"
       - "443:443"

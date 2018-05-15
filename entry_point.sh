@@ -9,10 +9,16 @@ get_env_vars() {
 }
 
 replace_conf_file() {
-	envsubst "$( get_env_vars )" < "$1" > "/etc/nginx/conf.d/default.conf"
+	replace_conf_file_user $1 nginx
+}
+
+replace_conf_file_user() {
+	sudo -u $2 cat $1 > /tmp/template.tmp
+	envsubst "$( get_env_vars )" < /tmp/template.tmp > "/etc/nginx/conf.d/default.conf"
 	echo "Vars of /etc/nginx/conf.d/default.conf replaced:"
 	cat  "/etc/nginx/conf.d/default.conf"
 	echo ""
+	rm /tmp/template.tmp
 }
 
 get_resolver() {
