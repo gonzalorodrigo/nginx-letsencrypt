@@ -2,59 +2,38 @@ version: '3'
 
 services:
   nginx:
-    build: nginx/.
+    build: .
     ports: 
       - "80:80"
+      - "443:443"
     volumes:
-      - ./nginx/conf.d:/conf.d
-      - ./nginx/letsencrypt:/etc/letsencrypt
-      - ./htdocs:/webroot
-      - ./:/test
+      - ./conf.d:/conf.d
+      - ./letsencrypt:/etc/letsencrypt
     environment:
-      - NGINX_FRONTEND_URL="http://frontend:80"
-      - NGINX_BACKEND_URL="http://backend:8000"
-      - NGINX_IMAGE_SERVER_URL="http://imageserver:80"
-      - NGINX_SERVER_NAME=gonzalo-pro.dhcp.lbnl.us
+      - NGINX_SERVICE_ROOT_URL=service-root:80
+      - NGINX_SERVICE_1_URL=service-1:80
+      - NGINX_SERVICE_2_URL=service-2:80
+      - NGINX_SERVICE_ROOT_LOCATION=/
+      - NGINX_SERVICE_1_LOCATION=/service_1
+      - NGINX_SERVICE_2_LOCATION=/service_2
+      - NGINX_SERVER_NAME=localhost
       - NGINX_CERT_EMAIL=gprodrigoalvarez@lbl.gov
     depends_on:
-      - frontend
-      - backend
-      - imageserver
-  db:
-    image: postgres:10.3
-    volumes:
-      - ./metadataserver/dbdata/data:/var/lib/postgresql/data
-  backend:
-    build: metadataserver/.
-    command: ["./wait-for-it.sh", "db:5432", "--", 
-              "python3", "manage.py", "runserver", "0.0.0.0:8000"]
-    volumes:
-      - ./metadataserver:/code
-      - ./import_images:/tmp/ncem_images
-      - ./preview_images:/tmp/preview_images
-      - ./metadataserver/remoteshelloverfs/shared:/shared
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-    environment:
-      - NCEM_IMAGE_SERVER_URL=http://127.0.0.1/images
-      - FILE_SHELL_COMMANDS=/shared/command.txt
-      - FILE_SHELL_OUTPUT=/shared/output.txt
-      - FILE_SHELL_DIR=/code/remoteshelloverfs
-      - FILE_SHELL_ENABLE=1
-      - SEARCH_INDEX_DO_CHECK=False 
-      - SEARCH_CONFIG_PARALLEL_ENABLED=True
-      - SEARCH_CONFIG_NUM_WORKERS=4
-  frontend:
+      - service-root
+      - service-1
+      - service-2
+  service-root:
     image: httpd:2.4
     volumes:
-      - ./htdocs:/usr/local/apache2/htdocs/
+      - ./htdocs_service_root:/usr/local/apache2/htdocs/
+  service-1:
+    image: httpd:2.4
+    volumes:
+      - ./htdocs_service_1:/usr/local/apache2/htdocs/
     ports:
       - "8080:80"
-  imageserver:
+  service-2:
     image: httpd:2.4
     volumes:
-      - ./preview_images:/usr/local/apache2/htdocs/
-    ports:
-      - "8090:80"
+      - ./htdocs_service_2:/usr/local/apache2/htdocs/
+  

@@ -1,9 +1,12 @@
 resolver ${NGINX_DNS_SERVER};
 
 server {
+
+    listen       80;
+    
     server_name  "${NGINX_SERVER_NAME}";
 
-    error_log /tmp/error.log warn;
+    error_log /tmp/error.log info;
 
     location ${NGINX_SERVICE_ROOT_LOCATION} {
         set $service_root ${NGINX_SERVICE_ROOT_URL};
@@ -51,22 +54,4 @@ server {
     #location ~ /\.ht {
     #    deny  all;
     #}
-
-    listen 443 ssl; # managed by Certbot
-    ssl_certificate /etc/letsencrypt/live/${NGINX_SERVER_NAME}/fullchain.pem; # managed by Certbot
-    ssl_certificate_key /etc/letsencrypt/live/${NGINX_SERVER_NAME}/privkey.pem; # managed by Certbot
-    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
-
-}
-
-server {
-    if ($host = ${NGINX_SERVER_NAME}) {
-        return 301 https://$host$request_uri;
-    } # managed by Certbot
-
-
-    listen       80;
-    server_name  "${NGINX_SERVER_NAME}";
-    return 404; # managed by Certbot
 }

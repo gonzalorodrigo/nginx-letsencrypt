@@ -8,37 +8,30 @@ get_env_vars() {
 	done
 }
 
-if [ -z "$NGINX_FRONTEND_URL" ]
-then
-	export NGINX_FRONTEND_URL="http://web-frontend:80"
-fi
-if [ -z "$NGINX_IMAGE_SERVER_URL" ]
-then
-	export NGINX_IMAGE_SERVER_URL="http://web-imageserver:80"
-fi
-if [ -z "$NGINX_BACKEND_URL" ]
-then
-	export NGINX_BACKEND_URL="http://web-backend:8000"
-fi
-if [ -z "$NGINX_FRONTEND_LOCATION" ]
-then
-	export NGINX_FRONTEND_LOCATION="/"
-fi
-if [ -z "$NGINX_IMAGE_SERVER_LOCATION" ]
-then
-	export NGINX_IMAGE_SERVER_LOCATION="/images/"
-fi
-if [ -z "$NGINX_BACKEND_LOCATION" ]
-then
-	export NGINX_BACKEND_LOCATION="/backend/"
-fi
+replace_conf_file() {
+	envsubst "$( get_env_vars )" < "$1" > "/etc/nginx/conf.d/default.conf"
+	echo "Vars of /etc/nginx/conf.d/default.conf replaced:"
+	cat  "/etc/nginx/conf.d/default.conf"
+	echo ""
+}
+
+get_resolver() {
+	dns_server=$( cat /etc/resolv.conf | grep nameserver | head -1 | cut "-d " -f2 )
+	echo $dns_server
+}
 
 if [ -z "$NGINX_SERVER_NAME" ]
 then
 	export NGINX_SERVER_NAME="localhost"
 fi
 
-template_file="default.conf.tmplt.cert"
+if [ -z "$NGINX_DNS_SERVER" ]
+then
+	export NGINX_DNS_SERVER=$( get_resolver )
+fi
+
+template_file="/conf.d/default.conf.tmplt.cert"
+template_file_fallback="/conf.d/default.conf.tmplt.fallback"
 ls /etc/letsencrypt/cli.ini > 0
 if [ $? -ne 0 ]
 then
@@ -50,15 +43,13 @@ ls /etc/letsencrypt/live/${NGINX_SERVER_NAME}/fullchain.pem
 if [ $? -ne 0 ]
 then
 	echo "Certs not present, using template without Certs"
-	template_file="default.conf.tmplt"
+	template_file="/default.conf.tmplt"
 fi 
 
-envsubst "$( get_env_vars )" < "/conf.d/${template_file}" > "/etc/nginx/conf.d/default.conf"
-echo "Vars of /etc/nginx/conf.d/default.conf replaced:"
-cat  "/etc/nginx/conf.d/default.conf"
-echo ""
+replace_conf_file "${template_file}"
+
 service cron start
-if [ $template_file = "default.conf.tmplt" ]
+if [ $template_file = "/default.conf.tmplt" ]
 then
 	echo "Attempting to create certs with letsencrypt"
 	nginx
@@ -72,7 +63,8 @@ then
 		echo "Certificates created successfully, re-launching NGINX"
 		./entry_point.sh
 	else
-		echo "Certificates not created, launching NGINX without them."
+		replace_conf_file "${template_file_fallback}"
+		echo "Certificates not created, launching NGINX without SSL!!"
 	fi
 fi
 nginx -g "daemon off;"	

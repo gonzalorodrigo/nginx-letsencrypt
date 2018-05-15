@@ -18,9 +18,6 @@ then
 fi
 
 
-sudo -u nginx mkdir -p /webroot/.well-known
-sudo -u nginx chmod o+rw /webroot/.well-known
-
 if [ "$1" = "--renew" ]
 then
   certbot renew
@@ -32,5 +29,4 @@ else
   exit_code=$?
 fi
 
-sudo -u nginx chmod o-rw /webroot/.well-known
 exit $exit_code
