@@ -4,9 +4,6 @@ services:
   nginx:
     build:
       context: .
-      args:
-        - SPIN_UID=503
-        - SPIN_GID=20
     ports: 
       - "80:80"
       - "443:443"
@@ -14,6 +11,8 @@ services:
       - ./conf.d:/conf.d
       - ./letsencrypt:/etc/letsencrypt
     environment:
+      - NGINX_UID=503
+      - NGINX_GID=20
       - NGINX_SERVICE_ROOT_URL=service-root:80
       - NGINX_SERVICE_1_URL=service-1:80
       - NGINX_SERVICE_2_URL=service-2:80

@@ -14,11 +14,4 @@ RUN apt-get -y -f install cron
 RUN apt-get -y -f install procps
 ADD ./crontab.renew /etc/cron.d/renew.certbot
 
-ARG SPIN_UID=60805
-ARG SPIN_GID=72483
-
-# Replace with your USER:GROUP
-RUN usermod  --non-unique --uid $SPIN_UID nginx 
-RUN groupmod --non-unique --gid $SPIN_GID nginx
-
 CMD ["./entry_point.sh"]

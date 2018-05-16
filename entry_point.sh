@@ -26,6 +26,20 @@ get_resolver() {
 	echo $dns_server
 }
 
+
+if [ -z "$NGINX_UID" ]
+then
+	echo "WARNING: Not changing nginx UID"
+else
+	usermod  --non-unique --uid $NGINX_UID nginx 	
+fi
+if [ -z "$NGINX_GID" ]
+then
+	echo "WARNING: Not changing nginx GID"
+else
+	groupmod --non-unique --gid $NGINX_GID nginx
+fi
+
 if [ -z "$NGINX_SERVER_NAME" ]
 then
 	export NGINX_SERVER_NAME="localhost"
