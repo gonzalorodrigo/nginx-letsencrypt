@@ -4,7 +4,8 @@ This Docker container includes NGINX:1.13.12, an [EFF's](https://www.eff.org/)
 [LetsEncrypt](https://letsencrypt.org/) tools to auto generate SSL
 certificates.
 
-To operate the container requires:
+**Operational requirements summary**
+
 - Any call on http://NGINX_SERVER_NAME must land in port 80 of the container.
 - Any call on https://NGINX_SERVER_NAME must land in port 443 of the container.
 - Service domain name (NGINX_SERVER_NAME) and cert email (NGINX_CERT_EMAIL) set
