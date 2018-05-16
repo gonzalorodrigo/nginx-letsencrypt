@@ -6,7 +6,7 @@ volumes:
       onRemove: retain
 services:
   web-nginx:
-    image: registry.spin.nersc.gov/crd-dst/sciencesearch-nginx:nginx-20180515-104054
+    image: registry.spin.nersc.gov/crd-dst/sciencesearch-nginx:nginx-20180515-174233
     volumes:
       - /project_location/{{ .Stack.Name }}/nginx/conf.d:/conf.d:ro
       - nginx.{{ .Stack.Name }}:/etc/letsencrypt/
