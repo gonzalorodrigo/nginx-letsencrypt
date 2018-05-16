@@ -1,11 +1,11 @@
-# NGINX with LetsEncrypy certs autogeneration and SSL wrapping
+# NGINX for Docker with LetsEncrypy certs auto-generation and SSL wrapping
 
 This Docker container includes NGINX:1.13.12 with:
 
-- Capacity to run wit uid:gid set from enviroment variables.
+- Capacity to run wit uid:gid set from environment variables.
 - Capacity to use external configuration files for "deault"
-- Support for enviroment variables in configuration files.
-- SSL certigicate auto-generation and renewal with [EFF's](https://www.eff.org/)
+- Support for environment variables in configuration files.
+- SSL certificate auto-generation and renewal with [EFF's](https://www.eff.org/)
 [LetsEncrypt](https://letsencrypt.org/) tools.
 
 **Operational requirements summary**
